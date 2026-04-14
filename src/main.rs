@@ -1,3 +1,6 @@
+pub mod todo;
+use todo::Todo;
+
 use crate::sqlite::establish_connection;
 
 pub mod sqlite;
