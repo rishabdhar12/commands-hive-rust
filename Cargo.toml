@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 rusqlite = "0.39.0"
+cli-table = "0.5"

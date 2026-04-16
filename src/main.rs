@@ -1,4 +1,7 @@
 pub mod todo;
+use std::io::Write;
+
+use rusqlite::Connection;
 use todo::Todo;
 
 use crate::sqlite::establish_connection;
@@ -17,8 +20,70 @@ fn main() {
                     println!("error establishing db connection : {}", e);
                     std::process::exit(1);
                 }
-                Ok(_) => println!("db connection established"),
+                Ok(conn) => {
+                    println!("db connection established");
+                    execute(&arg, &conn);
+                }
             }
+        }
+    }
+}
+
+fn execute(command: &str, conn: &Connection) {
+    if command == "add" {
+        match take_input() {
+            Ok(todo) => match todo::Todo::add_todo(&todo, &conn) {
+                Ok(_) => {
+                    println!("todo added");
+                    // let _ = todo::Todo::list_todo();
+                }
+                Err(e) => {
+                    println!("error while adding todo: {}", e);
+                }
+            },
+            Err(e) => println!("error: {}", e),
+        }
+    }
+
+    if command == "list" {
+        match todo::Todo::list_todo(&conn) {
+            Ok(_) => {},
+            Err(e) => println!("error: {}", e),
+        }
+    }
+}
+
+fn take_input() -> Result<Todo, std::io::Error> {
+    let title = read_valid_input("enter title >")?;
+    let desc = read_valid_input("enter description >")?;
+
+    Ok(Todo {
+        id: None,
+        title: title,
+        description: desc,
+    })
+}
+
+fn read_valid_input(prompt: &str) -> Result<String, std::io::Error> {
+    loop {
+        let mut input = String::new();
+
+        print!("{}", prompt);
+        std::io::stdout().flush()?;
+
+        if std::io::stdin().read_line(&mut input)? == 0 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::UnexpectedEof,
+                "user cancelled the operation",
+            ));
+        }
+
+        let input = input.trim();
+
+        if input.is_empty() {
+            println!("enter a word!");
+        } else {
+            return Ok(input.to_string());
         }
     }
 }

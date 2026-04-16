@@ -1,20 +1,20 @@
 use rusqlite::{Connection, Result};
 
-static DB_NAME: &str = "todo.db";
+pub static DB_NAME: &str = "todo.db";
+pub static TODO_TABLE: &str = "todo";
 
-pub fn establish_connection() -> Result<()> {
+pub fn establish_connection() -> Result<Connection> {
     let conn = Connection::open(DB_NAME)?;
 
     conn.execute(
         "CREATE TABLE IF NOT EXISTS todo (
             id INTEGER PRIMARY KEY,
             title TEXT NOT NULL,
-            description TEXT NOT NULL,
-            status INTEGER NOT NULL
+            description TEXT NOT NULL
         )
         ",
         (),
     )?;
 
-    Ok(())
+    Ok(conn)
 }
