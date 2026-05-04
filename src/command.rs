@@ -5,24 +5,24 @@ use crate::sqlite;
 use cli_table::{Cell, Style, Table, format::Justify, print_stdout};
 
 #[derive(Debug)]
-pub struct Todo {
+pub struct Command {
     pub id: Option<i32>,
     pub title: String,
     pub description: String,
 }
 
-impl Todo {
-    pub fn add_todo(todo: &Todo, conn: &Connection) -> Result<()> {
+impl Command {
+    pub fn add_command(command: &Command, conn: &Connection) -> Result<()> {
         let _ = conn.execute(
-            "INSERT INTO todo (title, description) VALUES (?1, ?2)",
-            (&todo.title, &todo.description),
+            "INSERT INTO command (title, description) VALUES (?1, ?2)",
+            (&command.title, &command.description),
         );
 
         Ok(())
     }
 
-    pub fn list_todo(conn: &Connection) -> Result<()> {
-        let query = format!("SELECT * FROM {}", sqlite::TODO_TABLE);
+    pub fn list_command(conn: &Connection) -> Result<()> {
+        let query = format!("SELECT * FROM {}", sqlite::COMMAND_TABLE);
 
         let mut stmt = conn.prepare(&query)?;
 
@@ -60,11 +60,11 @@ impl Todo {
     }
 
 
-    pub fn update_todo(id: i32, todo: Todo) -> Result<(), String> {
+    pub fn update_command(id: i32, command: Command) -> Result<(), String> {
         todo!()
     }
 
-    pub fn delete_todo(id: i32) -> Result<(), String> {
+    pub fn delete_command(id: i32) -> Result<(), String> {
         todo!()
     }
 }

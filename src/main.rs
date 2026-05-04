@@ -1,8 +1,8 @@
-pub mod todo;
+pub mod command;
 use std::io::Write;
 
 use rusqlite::Connection;
-use todo::Todo;
+use command::Command;
 
 use crate::sqlite::establish_connection;
 
@@ -32,13 +32,13 @@ fn main() {
 fn execute(command: &str, conn: &Connection) {
     if command == "add" {
         match take_input() {
-            Ok(todo) => match todo::Todo::add_todo(&todo, &conn) {
+            Ok(command) => match command::Command::add_command(&command, &conn) {
                 Ok(_) => {
-                    println!("todo added");
-                    // let _ = todo::Todo::list_todo();
+                    println!("command added");
+                    let _ = command::Command::list_command(conn);
                 }
                 Err(e) => {
-                    println!("error while adding todo: {}", e);
+                    println!("error while adding command: {}", e);
                 }
             },
             Err(e) => println!("error: {}", e),
@@ -46,18 +46,18 @@ fn execute(command: &str, conn: &Connection) {
     }
 
     if command == "list" {
-        match todo::Todo::list_todo(&conn) {
+        match command::Command::list_command(&conn) {
             Ok(_) => {},
             Err(e) => println!("error: {}", e),
         }
     }
 }
 
-fn take_input() -> Result<Todo, std::io::Error> {
+fn take_input() -> Result<Command, std::io::Error> {
     let title = read_valid_input("enter title >")?;
     let desc = read_valid_input("enter description >")?;
 
-    Ok(Todo {
+    Ok(Command {
         id: None,
         title: title,
         description: desc,
